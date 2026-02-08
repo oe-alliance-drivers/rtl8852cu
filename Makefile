@@ -897,6 +897,12 @@ endif
 
 include $(src)/phl/phl.mk
 
+KER_MINOR_15 := $(shell cd $(KSRC); echo `make kernelversion | cut -d. -f2` \>= 15 | bc -l)
+ifeq ($(KER_MAJOR_6), 1)
+ifeq ($(KER_MINOR_15), 1)
+ccflags-y := $(EXTRA_CFLAGS)
+endif
+endif
 
 obj-$(CONFIG_RTL8852CU) := $(MODULE_NAME).o
 obj-$(CONFIG_RTL8852CU) := $(MODULE_NAME).o
