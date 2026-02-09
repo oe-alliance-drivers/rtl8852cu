@@ -976,6 +976,13 @@ modules_install:
 #	mkdir -p ${OUT_DIR}/../vendor_lib/modules
 #	cd ${OUT_DIR}/$(M)/; find -name $(MODULE_NAME).ko -exec cp {} ${OUT_DIR}/../vendor_lib/modules/ \;
 
+sign:
+	@openssl req -new -x509 -newkey rsa:2048 -keyout MOK.priv -outform DER -out MOK.der -nodes -days 36500 -subj "/CN=Custom MOK/"
+	@mokutil --import MOK.der
+	@$(KSRC)/scripts/sign-file sha256 MOK.priv MOK.der 8852cu.ko
+
+sign-install: sign install
+
 backup_rtlwifi:
 	@echo "Making backup rtlwifi drivers"
 ifneq (,$(wildcard $(STAGINGMODDIR)/rtl*))
