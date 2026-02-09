@@ -968,7 +968,7 @@ install:
 	/sbin/depmod -a ${KVER}
 
 uninstall:
-	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
+	rm -f $(MODDESTDIR)$(MODULE_NAME).ko
 	/sbin/depmod -a ${KVER}
 
 modules_install:
