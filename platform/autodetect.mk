@@ -9,9 +9,6 @@ EXTRA_CFLAGS += -DCONFIG_REGD_SRC_FROM_OS
 # May be needed to ensure all channels are scanned
 #EXTRA_CFLAGS += -DCONFIG_FORCE_SW_CHANNEL_PLAN
 
-# Enable concurrent mode
-#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
-
 # Ensure correct ARCH is sent to gcc for numerous platforms
 SUBARCH := $(shell uname -m | sed -e "s/i.86/i386/; s/aarch64/arm64/; s/armv.l/arm/; s/riscv.*/riscv/; s/ppc/powerpc/;")
 ARCH ?= $(SUBARCH)
