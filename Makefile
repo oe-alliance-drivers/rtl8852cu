@@ -331,8 +331,11 @@ EXTRA_CFLAGS += -I$(src)/platform
 OBJS += $(_PLATFORM_FILES)
 
 KER_MAJOR_6 := $(shell echo `MAKEFLAGS= $(MAKE) -s -C $(KSRC) kernelversion 2>/dev/null | cut -d. -f1` \>= 6 | bc -l)
+KER_MAJOR_7 := $(shell echo `MAKEFLAGS= $(MAKE) -s -C $(KSRC) kernelversion 2>/dev/null | cut -d. -f1` \>= 7 | bc -l)
 KER_MINOR_13 := $(shell echo `MAKEFLAGS= $(MAKE) -s -C $(KSRC) kernelversion 2>/dev/null | cut -d. -f2` \>= 13 | bc -l)
-ifeq ($(KER_MAJOR_6), 1)
+ifeq ($(KER_MAJOR_7), 1)
+export KBUILD_ABS_SRCTREE := 1
+else ifeq ($(KER_MAJOR_6), 1)
 ifeq ($(KER_MINOR_13), 1)
 export KBUILD_ABS_SRCTREE := 1
 endif
@@ -922,7 +925,9 @@ endif
 include $(src)/phl/phl.mk
 
 KER_MINOR_15 := $(shell cd $(KSRC); echo `make kernelversion | cut -d. -f2` \>= 15 | bc -l)
-ifeq ($(KER_MAJOR_6), 1)
+ifeq ($(KER_MAJOR_7), 1)
+ccflags-y := $(EXTRA_CFLAGS)
+else ifeq ($(KER_MAJOR_6), 1)
 ifeq ($(KER_MINOR_15), 1)
 ccflags-y := $(EXTRA_CFLAGS)
 endif
