@@ -4,7 +4,7 @@ Maintained by: @morrownr
 
 ## Linux Driver for USB WiFi Adapters that are based on the RTL8832CU and RTL8852CU Chipsets
 
-- vv1.19.22-103 (Realtek) (20251113) plus updates from the Linux community
+- v1.19.22-103 (Realtek) (20251113) plus updates from the Linux community
 - Realtek development of this driver is ongoing.
 
 Note: Please read the file "supported-device-IDs" for information about
@@ -40,7 +40,7 @@ following links will provide more information:
 - Supported interface modes
   * IBSS (not tested)
   * Managed
-  * AP (see file hpstapd-rtl8852cu.conf)
+  * AP (see file hpstapd-rtl8852cu.conf in docs folder)
   * P2P-client
   * P2P-GO
 - VHT control (allows 160 MHz channel width in AP mode)
@@ -134,7 +134,7 @@ adapters, meaning that they have an internal Windows driver, and may be
 problematic.
 
 * Edup AX5400 EP-AX1671S
-* Brostrend AX8
+* Brostrend AX8L
 * TP-Link Archer TX50UH V1
 * TP-Link Archer TXE70UH(EU) V1
 * MSI AXE5400
@@ -149,7 +149,7 @@ adapters.
 Note: If you decide to buy an adapter that is supported by this driver,
 I recommend you search for an adapter that is `single-state and
 single-function`. Multi-function adapters, wifi and bluetooth, can be
-problematic. The rtl8852bu chipset is multi-fuction. The rtl8832bu
+problematic. The rtl8852cu chipset is multi-fuction. The rtl8832cu
 chipset is single-function. For advice about single-state and
 multi-state adapters. click [here](https://github.com/morrownr/USB-WiFi)
 and look for Main Menu item 1.
@@ -174,7 +174,7 @@ sudo dkms status
 ```
 
 Warning: If you decide to do a distro upgrade, which will likely install
-a new major version of the kernel such as 6.1 to 6.6, you need to
+a new major version of the kernel such as 6.12 to 6.18, you need to
 update this driver with the newest available code and then run the
 `uninstall-driver.sh` script before performing the disto upgrade. Use
 the following commands in the driver directory:
