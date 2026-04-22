@@ -99,7 +99,7 @@ which can be provided via PR or message in Issues.
 
 - [Raspberry Pi Desktop](https://www.raspberrypi.org) (2022-07-01) (x86 32 bit) (kernel 5.10)
 
-- [Ubuntu](https://www.ubuntu.com) kernels 6.8, 6.11, 6.14 and 6.17
+- [Ubuntu](https://www.ubuntu.com) kernels 6.8, 6.11, 6.14, 6.17 and 7.0
   
 - [Zorin](https://zorin.com/) 17.3 (kernel 6.8)
 
