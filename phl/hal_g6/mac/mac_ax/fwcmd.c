@@ -2144,8 +2144,8 @@ static u32 c2h_wicense_rpt_info(struct mac_ax_adapter *adapter, u8 *buf,
 
 	PLTFM_MEMCPY(rpt, pkg, sizeof(struct rtw_hal_mac_wicense_rpt));
 
-	en_dis_time_ms = (u32)((((u64)rpt->en_dis_time_h << 32) + rpt->en_dis_time_l) / 1000);
-	active_time_ms = (u32)((((u64)rpt->active_time_h << 32) + rpt->active_time_l) / 1000);
+	en_dis_time_ms = (u32)div_u64((((u64)rpt->en_dis_time_h << 32) + rpt->en_dis_time_l), 1000);
+	active_time_ms = (u32)div_u64((((u64)rpt->active_time_h << 32) + rpt->active_time_l), 1000);
 
 	if (csi_info->dbg_rpt_mode == WICENSE_DBG_RPT_MODE_EN_DETAIL) {
 		PLTFM_MSG_ALWAYS("[WisenseRpt] ===> report start....\n");
