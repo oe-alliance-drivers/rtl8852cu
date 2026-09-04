@@ -625,7 +625,14 @@ static inline sysptime rtw_sptime_get(void)
 
 static inline sysptime rtw_sptime_get_raw(void)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
 	return ktime_get_raw(); /* CLOCK_MONOTONIC_RAW */
+#else
+	struct timespec ts;
+
+	getrawmonotonic(&ts);
+	return timespec_to_ktime(ts);
+#endif
 }
 
 static inline sysptime rtw_sptime_set(s64 secs, const u32 nsecs)
