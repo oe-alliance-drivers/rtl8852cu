@@ -4360,13 +4360,33 @@ static int _rtw_disconnect(struct wiphy *wiphy, struct net_device *ndev)
 }
 
 #if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE) \
-    && !defined(CONFIG_KERNEL_PATCH_EXTERNAL_AUTH)
+    && defined(CONFIG_KERNEL_PATCH_EXTERNAL_AUTH)
+/* The external auth API comes from a cfg80211 backport the running kernel
+ * may lack, so it is looked up at runtime instead of linked against. */
+static bool rtw_cfg80211_ext_auth_available(void)
+{
+	typeof(&cfg80211_external_auth_request) fn;
+
+	fn = symbol_get(cfg80211_external_auth_request);
+	if (!fn)
+		return false;
+	symbol_put(cfg80211_external_auth_request);
+	return true;
+}
+#endif
+
+#if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE)
 static bool rtw_check_connect_sae_compat(struct cfg80211_connect_params *sme)
 {
 	struct rtw_ieee802_11_elems elems;
 	struct rsne_info info;
 	u8 AKM_SUITE_SAE[] = {0x00, 0x0f, 0xac, 8};
 	int i;
+
+#ifdef CONFIG_KERNEL_PATCH_EXTERNAL_AUTH
+	if (rtw_cfg80211_ext_auth_available())
+		return false;
+#endif
 
 	if (sme->auth_type != (int)MLME_AUTHTYPE_SHARED_KEY)
 		return false;
@@ -7086,6 +7106,9 @@ void rtw_cfg80211_external_auth_request(_adapter *padapter, union recv_frame *rf
 #if (KERNEL_VERSION(4, 17, 0) <= LINUX_VERSION_CODE) \
     || defined(CONFIG_KERNEL_PATCH_EXTERNAL_AUTH)
 	struct cfg80211_external_auth_params params = {0};
+#if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE)
+	typeof(&cfg80211_external_auth_request) ext_auth;
+#endif
 #endif
 	struct wireless_dev *wdev = padapter->rtw_wdev;
 	struct net_device *netdev = wdev_to_ndev(wdev);
@@ -7114,9 +7137,21 @@ void rtw_cfg80211_external_auth_request(_adapter *padapter, union recv_frame *rf
 		pmlmeinfo->network.Ssid.SsidLength);
 	params.key_mgmt_suite = 0x8ac0f00;
 
+#if (KERNEL_VERSION(4, 17, 0) <= LINUX_VERSION_CODE)
 	RTW_INFO("external auth: use kernel API: cfg80211_external_auth_request()\n");
 	cfg80211_external_auth_request(netdev, &params, GFP_ATOMIC);
-#elif (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
+#else
+	ext_auth = symbol_get(cfg80211_external_auth_request);
+	if (ext_auth) {
+		RTW_INFO("external auth: use kernel API: cfg80211_external_auth_request()\n");
+		ext_auth(netdev, &params, GFP_ATOMIC);
+		symbol_put(cfg80211_external_auth_request);
+		return;
+	}
+#endif
+#endif
+#if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE) \
+    && (KERNEL_VERSION(2, 6, 37) <= LINUX_VERSION_CODE)
 	set_frame_sub_type(frame, WIFI_AUTH);
 
 	_rtw_memcpy(frame + 4, get_my_bssid(&pmlmeinfo->network), ETH_ALEN);
@@ -11822,7 +11857,11 @@ static int rtw_cfg80211_init_wiphy(_adapter *adapter, struct wiphy *wiphy)
 #endif
 
 /* Adding support for SAE */
-#if (KERNEL_VERSION(3, 8, 0) <= LINUX_VERSION_CODE)
+#if (KERNEL_VERSION(4, 17, 0) > LINUX_VERSION_CODE) \
+    && defined(CONFIG_KERNEL_PATCH_EXTERNAL_AUTH)
+	if (rtw_cfg80211_ext_auth_available())
+		wiphy->features |= NL80211_FEATURE_SAE;
+#elif (KERNEL_VERSION(3, 8, 0) <= LINUX_VERSION_CODE)
 	wiphy->features |= NL80211_FEATURE_SAE;
 #endif
 #ifdef CONFIG_CFG80211_SME_OFFLOAD
